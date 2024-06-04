@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <Sprite.h>
+#include <Tile.h>
 #include <stdio.h>
 #include <string>
 #include <vector>
@@ -25,7 +26,7 @@ public:
 
 	SDL_Rect* getHitbox();
 
-	void chasePlayer(float playerX, float playerY, std::vector<SDL_Rect> barriers);
+	void chasePlayer(float playerX, float playerY, std::vector<Tile> * barriers);
 
 private:
 

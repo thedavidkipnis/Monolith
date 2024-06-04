@@ -116,10 +116,10 @@ int Player::checkCollision(SDL_Rect a, SDL_Rect b) {
 	}
 }
 
-void Player::move(float screenWidth, float screenHeight, std::vector<SDL_Rect> & barriers) {
+void Player::move(float screenWidth, float screenHeight, std::vector<Tile> * barriers) {
 
-	for (int i = 0; i < barriers.size(); i++) {
-		int collisionCheck = checkCollision(hitbox, barriers[i]);
+	for (int i = 0; i < barriers->size(); i++) {
+		int collisionCheck = checkCollision(hitbox, barriers->at(i).getTile());
 		if (collisionCheck >= 0) {
 			switch (collisionCheck) {
 			case 0:

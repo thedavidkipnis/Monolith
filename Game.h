@@ -5,6 +5,9 @@
 #include <Player.h>
 #include <Entity.h>
 #include <Sprite.h>
+#include <Room.h>
+#include <Tile.h>
+
 #include <stdio.h>
 #include <string>
 #include <time.h>

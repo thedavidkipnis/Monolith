@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <Entity.h>
+#include "Tile.h"
 
 class Player
 {
@@ -23,7 +24,7 @@ class Player
 		int checkCollision(SDL_Rect a, SDL_Rect b);
 
 		//Moves the dot
-		void move(float screenWidth, float screenHeight, std::vector<SDL_Rect> & barriers);
+		void move(float screenWidth, float screenHeight, std::vector<Tile> * barriers);
 
 		void attack(SDL_Event& e);
 

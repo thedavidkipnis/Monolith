@@ -82,11 +82,11 @@ int Entity::checkCollision(SDL_Rect a, SDL_Rect b) {
 }
 
 
-void Entity::chasePlayer(float playerX, float playerY, std::vector<SDL_Rect> barriers) {
+void Entity::chasePlayer(float playerX, float playerY, std::vector<Tile> * barriers) {
 	float distToPlayer = distanceToPoint(playerX, playerY);
 
-	for (int i = 0; i < barriers.size(); i++) {
-		int collisionCheck = checkCollision(hitbox, barriers[i]);
+	for (int i = 0; i < barriers->size(); i++) {
+		int collisionCheck = checkCollision(hitbox, barriers->at(i).getTile());
 		if (collisionCheck >= 0) {
 			switch (collisionCheck) {
 			case 0:
