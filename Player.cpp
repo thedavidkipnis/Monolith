@@ -30,6 +30,8 @@ Player::Player(int w, int h, float posX, float posY) {
 	hitbox.x = mPosX;
 	hitbox.y = mPosY;
 
+	attackDir = -1;
+
 }
 
 void Player::handleEvent(SDL_Event& e) {
@@ -142,10 +144,11 @@ void Player::move(float screenWidth, float screenHeight, std::vector<SDL_Rect> &
 	
 
 	// accelerate left
-	if (left && (mVelX / 100) > -1 * MAX_VEL) {
+	if (left && (mVelX / 100) > -1 * MAX_VEL && !right) {
 		mVelX -= acceleration_factor;
 	}
-	else if (!left && mVelX < 0) {
+	// deccelerating left
+	else if (mVelX < 0 && (!left || (right && left))) {
 		if (abs(mVelX) < decceleration_factor) {
 			mVelX = 0;
 		}
@@ -155,10 +158,11 @@ void Player::move(float screenWidth, float screenHeight, std::vector<SDL_Rect> &
 	}
 
 	// accelerate right
-	if (right && (mVelX / 100) < MAX_VEL) {
+	if (right && (mVelX / 100) < MAX_VEL && !left) {
 		mVelX += acceleration_factor;
 	}
-	else if (!right && mVelX > 0) {
+	// deccelerating right
+	else if (mVelX > 0 && (!right || (right && left))) {
 		if (abs(mVelX) < decceleration_factor) {
 			mVelX = 0;
 		}
@@ -181,10 +185,10 @@ void Player::move(float screenWidth, float screenHeight, std::vector<SDL_Rect> &
 	}
 
 	// accelerate up
-	if (up && (mVelY / 100) > -1 * MAX_VEL) {
+	if (up && (mVelY / 100) > -1 * MAX_VEL && !down) {
 		mVelY -= acceleration_factor;
 	}
-	else if (!up && mVelY < 0) {
+	else if (mVelY < 0 && (!up || (up && down))) {
 		if (abs(mVelY) < decceleration_factor) {
 			mVelY = 0;
 		}
@@ -194,10 +198,10 @@ void Player::move(float screenWidth, float screenHeight, std::vector<SDL_Rect> &
 	}
 
 	// accelerate down
-	if (down && (mVelY / 100) < MAX_VEL) {
+	if (down && (mVelY / 100) < MAX_VEL && !up) {
 		mVelY += acceleration_factor;
 	}
-	else if (!down && mVelY > 0) {
+	else if (mVelY > 0 && (!down || (up && down))) {
 		if (abs(mVelY) < decceleration_factor) {
 			mVelY = 0;
 		}
@@ -225,19 +229,30 @@ void Player::move(float screenWidth, float screenHeight, std::vector<SDL_Rect> &
 	hitbox.y = mPosY;
 }
 
-int Player::attack(SDL_Event& e) {
-	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+void Player::attack(SDL_Event& e) {
+	if (e.type == SDL_KEYDOWN)
 	{
 		//Adjust the velocity
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_UP: return 1; break;
-		case SDLK_DOWN: return 3; break;
-		case SDLK_LEFT: return 0; break;
-		case SDLK_RIGHT: return 2; break;
+		case SDLK_UP: attackDir = 1; break;
+		case SDLK_DOWN: attackDir = 3; break;
+		case SDLK_LEFT: attackDir = 0; break;
+		case SDLK_RIGHT: attackDir = 2; break;
 		}
 	}
-	return -1;
+
+	else if (e.type == SDL_KEYUP && e.key.repeat == 0)
+	{
+		//Adjust the velocity
+		switch (e.key.keysym.sym)
+		{
+		case SDLK_UP: attackDir = -1; break;
+		case SDLK_DOWN: attackDir = -1; break;
+		case SDLK_LEFT: attackDir = -1; break;
+		case SDLK_RIGHT: attackDir = -1; break;
+		}
+	}
 }
 
 float Player::getXPos() {
@@ -283,6 +298,10 @@ int Player::returnDirection() {
 		return 1;
 	}
 	return 1;
+}
+
+int Player::getAttackDir() {
+	return attackDir;
 }
 
 SDL_Rect* Player::getHitbox() {

@@ -25,7 +25,7 @@ class Player
 		//Moves the dot
 		void move(float screenWidth, float screenHeight, std::vector<SDL_Rect> & barriers);
 
-		int attack(SDL_Event& e);
+		void attack(SDL_Event& e);
 
 		float getXPos();
 		float getYPos();
@@ -36,6 +36,8 @@ class Player
 		float getHeight();
 		float getWidth();
 		SDL_Rect* getHitbox();
+
+		int getAttackDir();
 
 		int returnDirection();
 
@@ -51,6 +53,8 @@ class Player
 
 		bool up, down, left, right;
 		float last_known_up, last_known_down, last_known_left, last_known_right;
+
+		int attackDir;
 
 		SDL_Rect hitbox;
 };
