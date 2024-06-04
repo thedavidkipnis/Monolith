@@ -242,7 +242,7 @@ void Player::attack(SDL_Event& e) {
 		}
 	}
 
-	else if (e.type == SDL_KEYUP && e.key.repeat == 0)
+	else if (e.type == SDL_KEYUP)
 	{
 		//Adjust the velocity
 		switch (e.key.keysym.sym)
