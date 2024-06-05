@@ -85,7 +85,7 @@ bool Game::loadMedia()
 	//Loading success flag
 	bool success = true;
 
-	if (!gBlockTexture.loadFromFile(gRenderer, "img/download.png"))
+	if (!gBlockTexture.loadFromFile(gRenderer, "img/Stone Wall.png"))
 	{
 		printf("Failed to load block texture!\n");
 		success = false;
@@ -94,7 +94,7 @@ bool Game::loadMedia()
 	if (!dirtTexture.loadFromFile(gRenderer, "img/dirt.png"))
 	{
 		printf("Failed to load dirt texture!\n");
-		success = false;
+		success = false; 
 	}
 	if (!spooderTexture.loadFromFile(gRenderer, "img/spood.png"))
 	{
@@ -180,6 +180,8 @@ int Game::run()
 		return -1;
 	}
 
+	srand(time(0));
+
 	//Main loop flag
 	bool quit = false;
 
@@ -187,13 +189,32 @@ int Game::run()
 	SDL_Event e;
 
 	Player* player = new Player(75, 75, 100, 100);
-	Entity* testSpooder = new Entity(75, 75, 1000, 800);
+	//Entity* testSpooder = new Entity(75, 75, 1000, 800);
 
 
-	// generating current Room
-	Room curRoom = Room::Room();
-	std::vector<Tile>* tiles = curRoom.getTiles();
-	std::vector<Tile>* barriers = curRoom.getBarriers();
+	// generating rooms
+	Room room1 = Room::Room("rooms/empty_test_1.txt");
+	Room room2 = Room::Room("rooms/empty_test_2.txt");
+	Room room3 = Room::Room("rooms/empty_test_3.txt");
+	Room room4 = Room::Room("rooms/empty_test_3.txt");
+	Room room5 = Room::Room("rooms/empty_test_3.txt");
+
+	room1.setNeighborAt(0, &room2);
+	room2.setNeighborAt(2, &room1);
+
+	room2.setNeighborAt(0, &room5);
+	room5.setNeighborAt(2, &room2);
+
+	room1.setNeighborAt(1, &room3);
+	room3.setNeighborAt(3, &room1);
+
+	room1.setNeighborAt(3, &room4);
+	room4.setNeighborAt(1, &room1);
+
+	Room* curRoom = &room1;
+
+	std::vector<Tile>* tiles = curRoom->getTiles();
+	std::vector<Tile>* barriers = curRoom->getBarriers();
 
 	//While application is running
 	while (!quit)
@@ -214,13 +235,12 @@ int Game::run()
 
 		//Move the dot
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, barriers);
-		testSpooder->chasePlayer(player->getCenterX(), player->getCenterY(), barriers);
+		//testSpooder->chasePlayer(player->getCenterX(), player->getCenterY(), barriers);
 
 		//Clear screen
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
 
-		//Render objects
 		//renders all non barrier tiles
 		for (size_t i = 0; i < tiles->size(); i++)
 		{
@@ -242,14 +262,25 @@ int Game::run()
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0x00);
 		SDL_RenderDrawRect(gRenderer, player->getHitbox());
 
-		render_tile(&spooderTexture, testSpooder->getXPos(), testSpooder->getYPos(), 75, 75, 0);
+		/*render_tile(&spooderTexture, testSpooder->getXPos(), testSpooder->getYPos(), 75, 75, 0);
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0x00);
-		SDL_RenderDrawRect(gRenderer, testSpooder->getHitbox());
+		SDL_RenderDrawRect(gRenderer, testSpooder->getHitbox());*/
 
-		render_tile(&doorTexture, 560, 0, 160, 80, 0);
-		render_tile(&doorTexture, -40, 440, 160, 80, 270);
-		render_tile(&doorTexture, 1160, 440, 160, 80, 90);
-		render_tile(&doorTexture, 560, 880, 160, 80, 180);
+		if (curRoom->getNeighborAt(0) != NULL) {
+			render_tile(&doorTexture, -40, 440, 160, 80, 270);
+		}
+
+		if (curRoom->getNeighborAt(1) != NULL) {
+			render_tile(&doorTexture, 560, 0, 160, 80, 0);
+		}
+
+		if (curRoom->getNeighborAt(2) != NULL) {
+			render_tile(&doorTexture, 1160, 440, 160, 80, 90);
+		}
+
+		if (curRoom->getNeighborAt(3) != NULL) {
+			render_tile(&doorTexture, 560, 880, 160, 80, 180);
+		}
 
 		int attackDirection = player->getAttackDir();
 		if (attackDirection > -1) {
@@ -271,6 +302,46 @@ int Game::run()
 
 		//Update screen
 		SDL_RenderPresent(gRenderer);
+
+		float px = player->getXPos();
+		float py = player->getYPos();
+
+		if (px >= 580 && px <= 700 && py <= 80 and curRoom->getNeighborAt(1) != NULL) {
+			curRoom = curRoom->getNeighborAt(1);
+			barriers = curRoom->getBarriers();
+			tiles = curRoom->getTiles();
+
+			player->moveIntoRoom(3);
+			printf("%s\n", "moved into top room");
+
+		}
+		if (px <= 81 && py >= 440 && py <= 520 and curRoom->getNeighborAt(0) != NULL) {
+			curRoom = curRoom->getNeighborAt(0);
+			barriers = curRoom->getBarriers();
+			tiles = curRoom->getTiles();
+
+			player->moveIntoRoom(2);
+			printf("%s\n", "moved into left room");
+
+		}
+		if (px >= 1119 && py >= 440 && py <= 520 and curRoom->getNeighborAt(2) != NULL) {
+			curRoom = curRoom->getNeighborAt(2);
+			barriers = curRoom->getBarriers();
+			tiles = curRoom->getTiles();
+
+			player->moveIntoRoom(0);
+			printf("%s\n", "moved into right room");
+
+		}
+		if (px >= 580 && px <= 700 && py >= 799 and curRoom->getNeighborAt(3) != NULL) {
+			curRoom = curRoom->getNeighborAt(3);
+			barriers = curRoom->getBarriers();
+			tiles = curRoom->getTiles();
+
+			player->moveIntoRoom(1);
+			printf("%s\n", "moved into bottom room");
+
+		}
 	}
 
 	//Free resources and close SDL

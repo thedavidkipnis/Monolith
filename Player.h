@@ -26,6 +26,8 @@ class Player
 		//Moves the dot
 		void move(float screenWidth, float screenHeight, std::vector<Tile> * barriers);
 
+		void moveIntoRoom(int positionInRoom);
+
 		void attack(SDL_Event& e);
 
 		float getXPos();

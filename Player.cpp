@@ -229,6 +229,43 @@ void Player::move(float screenWidth, float screenHeight, std::vector<Tile> * bar
 	hitbox.y = mPosY;
 }
 
+void Player::moveIntoRoom(int positionInRoom) {
+	printf("%s\n", "moving into room");
+	last_known_left = 0;
+	last_known_up = 0;
+	last_known_right = 10000;
+	last_known_up = 10000;
+
+	mVelX = 0;
+	mVelY = 0;
+
+	switch (positionInRoom) {
+	case 0: {
+		mPosX = 81;
+		mPosY = 440;
+	}
+		  break;
+	case 1: {
+		mPosX = 600;
+		mPosY = 81;
+	}
+		  break;
+	case 2: {
+		mPosX = 1118;
+		mPosY = 440;
+	}
+		  break;
+	case 3: {
+		mPosX = 600;
+		mPosY = 798;
+	}
+		  break;
+	}
+
+	hitbox.x = mPosX;
+	hitbox.y = mPosY;
+}
+
 void Player::attack(SDL_Event& e) {
 	if (e.type == SDL_KEYDOWN)
 	{
