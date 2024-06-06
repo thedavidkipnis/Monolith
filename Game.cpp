@@ -137,7 +137,7 @@ bool Game::init()
 		}
 
 		//Create window
-		gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		gWindow = SDL_CreateWindow("Monolith", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL)
 		{
 			printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
@@ -337,8 +337,8 @@ int Game::run()
 
 		// rendering player + hitbox
 		renderPlayer(player);
-		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0x00);
-		SDL_RenderDrawRect(gRenderer, player->getHitbox());
+		/*SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0x00);
+		SDL_RenderDrawRect(gRenderer, player->getHitbox());*/
 
 		// rendering test spider + hitbox
 		renderTile(&spooderTexture, testSpooder->getXPos(), testSpooder->getYPos(), 75, 75, 0);
