@@ -1,3 +1,16 @@
+/*
+Copyright KD Studios
+Written by David Kipnis, 2024
+*/
+
+/*
+
+PROJECTILE Class
+
+Projectiles that are shot by entities or the player
+
+*/
+
 #include "Projectile.h"
 
 Projectile::Projectile(int w, int h, float posX, float posY) {

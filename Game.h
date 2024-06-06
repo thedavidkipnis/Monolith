@@ -1,4 +1,22 @@
+/*
+Copyright KD Studios
+Written by David Kipnis, 2024
+*/
+
+/*
+
+GAME Class Header
+
+Main Game object that runs the game
+
+*/
+
 #pragma once
+
+#include <stdio.h>
+#include <string>
+#include <time.h>
+#include <vector>
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -8,10 +26,6 @@
 #include <Room.h>  
 #include <Tile.h>
 
-#include <stdio.h>
-#include <string>
-#include <time.h>
-#include <vector>
 
 class Game
 {
@@ -22,29 +36,63 @@ public:
 	const float SCREEN_WIDTH = 640 * 2;
 	const float SCREEN_HEIGHT = 480 * 2;
 
-	//Starts up SDL and creates window
+	/* 
+	* Starts up SDL and creates window
+	* SDL Tutorial function
+	*/
 	bool init();
 
-	//Loads media
+	/*
+	* Load media files (all the PNGs :D)
+	* SDL Tutorial function
+	*/
 	bool loadMedia();
 
-	//Frees media and shuts down SDL
+	/*
+	* Frees media and shuts down SDL
+	* SDL Tutorial function
+	*/
 	void close();
 
-	void render_player(int dir, float w, float h, float mPosX, float mPosY);
-	void render_tile(Sprite* texture, float mPosX, float mPosY, float width, float height, double angle);
+	// renders player sprite
+	void renderPlayer(Player* player);
 
+	/*
+	* renders tile sprite
+	* texture = texture for the tile
+	* posX, posY = coordinates for sprite
+	* width, height = dimensions for character's sprite
+	* angle = how much the texture is rotated
+	*/
+	void renderTile(Sprite* texture, float posX, float posY, float width, float height, double angle);
+
+	// renders current room
+	void renderRoom(std::vector<Tile>* tiles, std::vector<Tile>* barriers, std::vector<Room*>* neighbors);
+
+	// checks if player is in a doorway to another room
+	Room* isPlayerInDoorway(Room* curRoom, float player_x, float player_y);
+
+	//moves player into new room and changes room tiles, barriers and entities
+	void moveToRoom(Player* player, Room* newRoom);
+
+	// main game run time loop
 	int run();
 
 private:
 
-	//The window we'll be rendering to
+	//window being rendered to
 	SDL_Window* gWindow = NULL;
 
-	//The window renderer
+	//renderer being used
 	SDL_Renderer* gRenderer = NULL;
 
-	//Scene textures
+	//room the game is currently in
+	Room* curRoom;
+	std::vector<Tile>* tiles;
+	std::vector<Tile>* barriers;
+	std::vector<Room*>* neighbors;
+
+	//textures
 	Sprite gBlockTexture;
 	Sprite dirtTexture;
 	Sprite spooderTexture;
@@ -52,6 +100,7 @@ private:
 
 	Sprite swordTexture;
 
+	//player directional textures
 	Sprite p_up;
 	Sprite p_down;
 	Sprite p_left;
@@ -59,7 +108,6 @@ private:
 
 
 	int attackDir = -1;
-
 
 };
 

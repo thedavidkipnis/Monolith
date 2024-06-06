@@ -1,3 +1,16 @@
+/*
+Copyright KD Studios
+Written by David Kipnis, 2024
+*/
+
+/*
+
+PLAYER Class
+
+Keeps track of the playable character mechanics, inventory, and stats
+
+*/
+
 #include "Player.h"
 
 Player::Player(int w, int h, float posX, float posY) {
@@ -15,11 +28,6 @@ Player::Player(int w, int h, float posX, float posY) {
 	down = false;
 	left = false;
 	right = false;
-
-	last_known_up = 0;
-	last_known_down = 1000;
-	last_known_left = 0;
-	last_known_right = 1000;
 
 	acceleration_factor = 8.0;
 	decceleration_factor = 16.0;
@@ -61,81 +69,27 @@ void Player::handleEvent(SDL_Event& e) {
 	}
 }
 
-int Player::checkCollision(SDL_Rect a, SDL_Rect b) {
-	int left_a, left_b, right_a, right_b;
-	int top_a, top_b, bottom_a, bottom_b;
-
-	int a_center_x = a.x + (a.w / 2);
-	int a_center_y = a.y + (a.h / 2);
-	int b_center_x = b.x + (b.w / 2);
-	int b_center_y = b.y + (b.h / 2);
-
-	left_a = a.x;
-	right_a = a.x + a.w;
-	top_a = a.y;
-	bottom_a = a.y + a.h;
-
-	left_b = b.x;
-	right_b = b.x + b.w;
-	top_b = b.y;
-	bottom_b = b.y + b.h;
-
-	//If any of the sides from A are outside of B
-	if (bottom_a <= top_b || top_a >= bottom_b || right_a <= left_b || left_a >= right_b)
-	{
-		return -1;
-	}
-
-	if ((a_center_x <= b_center_x)) {
-		if (bottom_a >= bottom_b && !(a_center_x >= left_b - (a.w/2) - 5 && a_center_x <= left_b - (a.w / 2) + 5)) {
-			last_known_up = bottom_b+1;
-			return 3;
-		}
-		else if (top_a <= top_b && !(a_center_x >= left_b - (a.w / 2) - 5 && a_center_x <= left_b - (a.w / 2) + 5)) {
-			last_known_down = top_b;
-			return 1;
-		}
-		else {
-			last_known_right = left_b;
-			return 0;
-		}
-	}
-	else {
-		if (bottom_a >= bottom_b && !(a_center_x >= right_b + (a.w / 2) - 5 && a_center_x <= right_b + (a.w / 2) + 5)) {
-			last_known_up = bottom_b+1;
-			return 3;
-		}
-		else if (top_a <= top_b && !(a_center_x >= right_b + (a.w / 2) - 5 && a_center_x <= right_b + (a.w / 2) + 5)) {
-			last_known_down = top_b;
-			return 1;
-		}
-		else {
-			last_known_left = right_b+1;
-			return 2;
-		}
-	}
-}
-
-void Player::move(float screenWidth, float screenHeight, std::vector<Tile> * barriers) {
+void Player::move(float screenWidth, float screenHeight, std::vector<Tile>* barriers) {
 
 	for (int i = 0; i < barriers->size(); i++) {
-		int collisionCheck = checkCollision(hitbox, barriers->at(i).getTile());
+		SDL_Rect curTile = barriers->at(i).getTile();
+		int collisionCheck = MathFunc::checkCollision(hitbox, curTile);
 		if (collisionCheck >= 0) {
 			switch (collisionCheck) {
 			case 0:
-				mPosX = last_known_right - width;
+				mPosX = curTile.x - width;
 				mVelX = 0;
 				break;
 			case 1:
-				mPosY = last_known_down - height;
+				mPosY = curTile.y - height;
 				mVelY = 0;
 				break;
 			case 2:
-				mPosX = last_known_left;
+				mPosX = curTile.x + curTile.w + 1;
 				mVelX = 0;
 				break;
 			case 3:
-				mPosY = last_known_up;
+				mPosY = curTile.y + curTile.h + 1;
 				mVelY = 0;
 				break;
 			}
@@ -229,37 +183,26 @@ void Player::move(float screenWidth, float screenHeight, std::vector<Tile> * bar
 	hitbox.y = mPosY;
 }
 
-void Player::moveIntoRoom(int positionInRoom) {
-	printf("%s\n", "moving into room");
-	last_known_left = 0;
-	last_known_up = 0;
-	last_known_right = 10000;
-	last_known_up = 10000;
+void Player::moveIntoRoom() {
 
 	mVelX = 0;
 	mVelY = 0;
 
-	switch (positionInRoom) {
-	case 0: {
+	if(mPosX >= 1119 && mPosY >= 440 && mPosY <= 520) {
 		mPosX = 81;
 		mPosY = 440;
 	}
-		  break;
-	case 1: {
-		mPosX = 600;
-		mPosY = 81;
-	}
-		  break;
-	case 2: {
-		mPosX = 1118;
-		mPosY = 440;
-	}
-		  break;
-	case 3: {
+	else if (mPosX >= 580 && mPosX <= 700 && mPosY <= 80) {
 		mPosX = 600;
 		mPosY = 798;
 	}
-		  break;
+	else if (mPosX <= 81 && mPosY >= 440 && mPosY <= 520) {
+		mPosX = 1118;
+		mPosY = 440;
+	}
+	else if (mPosX >= 580 && mPosX <= 700 && mPosY >= 799) {
+		mPosX = 600;
+		mPosY = 81;
 	}
 
 	hitbox.x = mPosX;
@@ -321,7 +264,7 @@ float Player::getWidth() {
 	return width;
 }
 
-int Player::returnDirection() {
+int Player::returnMovementDirection() {
 	if (left) {
 		return 0;
 	}

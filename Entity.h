@@ -1,8 +1,22 @@
+/*
+Copyright KD Studios
+Written by David Kipnis, 2024
+*/
+
+/*
+
+ENTITY Class Header
+
+Non-player entities in the game, both hostile and non-hostile
+
+*/
+
 #pragma once
 #include <SDL.h>
 #include <SDL_image.h>
 #include <Sprite.h>
 #include <Tile.h>
+#include <MathFunc.h>
 #include <stdio.h>
 #include <string>
 #include <vector>
@@ -20,12 +34,14 @@ public:
 	float getCenterY();
 	void setXPos(float p_x);
 	void setYPos(float p_y);
+
+	// returns the distance from Entity's center to the point
 	float distanceToPoint(float x, float y);
 
-	int checkCollision(SDL_Rect a, SDL_Rect b);
-
+	// returns a ptr to the entity's hitbox
 	SDL_Rect* getHitbox();
 
+	// basic AI for moving after the player
 	void chasePlayer(float playerX, float playerY, std::vector<Tile> * barriers);
 
 private:
@@ -38,8 +54,6 @@ private:
 
 	float acceleration_factor;
 	float decceleration_factor;
-
-	float last_known_up, last_known_down, last_known_left, last_known_right;
 
 	SDL_Rect hitbox;
 };

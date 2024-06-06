@@ -1,4 +1,18 @@
-#include "Entity.h"
+/*
+Copyright KD Studios
+Written by David Kipnis, 2024
+*/
+
+/*
+
+ENTITY Class
+
+Non-player entities in the game, both hostile and non-hostile
+
+*/
+
+#pragma once
+#include <Entity.h>
 
 Entity::Entity(int w, int h, float posX, float posY) {
 	width = w;
@@ -11,11 +25,6 @@ Entity::Entity(int w, int h, float posX, float posY) {
 	mVelX = 0;
 	mVelY = 0;
 
-	last_known_up = 0;
-	last_known_down = 1000;
-	last_known_left = 0;
-	last_known_right = 1000;
-
 	acceleration_factor = 2.0;
 	decceleration_factor = 8.0;
 
@@ -26,88 +35,36 @@ Entity::Entity(int w, int h, float posX, float posY) {
 	hitbox.y = mPosY;
 }
 
-int Entity::checkCollision(SDL_Rect a, SDL_Rect b) {
-	int left_a, left_b, right_a, right_b;
-	int top_a, top_b, bottom_a, bottom_b;
-
-	int a_center_x = a.x + (a.w / 2);
-	int a_center_y = a.y + (a.h / 2);
-	int b_center_x = b.x + (b.w / 2);
-	int b_center_y = b.y + (b.h / 2);
-
-	left_a = a.x;
-	right_a = a.x + a.w;
-	top_a = a.y;
-	bottom_a = a.y + a.h;
-
-	left_b = b.x;
-	right_b = b.x + b.w;
-	top_b = b.y;
-	bottom_b = b.y + b.h;
-
-	//If any of the sides from A are outside of B
-	if (bottom_a <= top_b || top_a >= bottom_b || right_a <= left_b || left_a >= right_b)
-	{
-		return -1;
-	}
-
-	if ((a_center_x <= b_center_x)) {
-		if (bottom_a >= bottom_b && !(a_center_x >= left_b - (a.w / 2) - 5 && a_center_x <= left_b - (a.w / 2) + 5)) {
-			last_known_up = bottom_b + 1;
-			return 3;
-		}
-		else if (top_a <= top_b && !(a_center_x >= left_b - (a.w / 2) - 5 && a_center_x <= left_b - (a.w / 2) + 5)) {
-			last_known_down = top_b;
-			return 1;
-		}
-		else {
-			last_known_right = left_b;
-			return 0;
-		}
-	}
-	else {
-		if (bottom_a >= bottom_b && !(a_center_x >= right_b + (a.w / 2) - 5 && a_center_x <= right_b + (a.w / 2) + 5)) {
-			last_known_up = bottom_b + 1;
-			return 3;
-		}
-		else if (top_a <= top_b && !(a_center_x >= right_b + (a.w / 2) - 5 && a_center_x <= right_b + (a.w / 2) + 5)) {
-			last_known_down = top_b;
-			return 1;
-		}
-		else {
-			last_known_left = right_b + 1;
-			return 2;
-		}
-	}
-}
-
 
 void Entity::chasePlayer(float playerX, float playerY, std::vector<Tile> * barriers) {
-	float distToPlayer = distanceToPoint(playerX, playerY);
 
 	for (int i = 0; i < barriers->size(); i++) {
-		int collisionCheck = checkCollision(hitbox, barriers->at(i).getTile());
+		SDL_Rect curTile = barriers->at(i).getTile();
+		int collisionCheck = MathFunc::checkCollision(hitbox, curTile);
 		if (collisionCheck >= 0) {
 			switch (collisionCheck) {
 			case 0:
-				mPosX = last_known_right - width;
+				mPosX = curTile.x - width;
 				mVelX = 0;
 				break;
 			case 1:
-				mPosY = last_known_down - height;
+				mPosY = curTile.y - height;
 				mVelY = 0;
 				break;
 			case 2:
-				mPosX = last_known_left;
+				mPosX = curTile.x + curTile.w + 1;
 				mVelX = 0;
 				break;
 			case 3:
-				mPosY = last_known_up;
+				mPosY = curTile.y + curTile.h + 1;
 				mVelY = 0;
 				break;
 			}
 		}
 	}
+
+	// checking distance to player
+	float distToPlayer = distanceToPoint(playerX, playerY);
 
 	if (getCenterX() < playerX && distToPlayer < 500) {
 		// accelerate right

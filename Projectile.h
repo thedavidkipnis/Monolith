@@ -1,4 +1,18 @@
+/*
+Copyright KD Studios
+Written by David Kipnis, 2024
+*/
+
+/*
+
+PROJECTILE Class Header
+
+Projectiles that are shot by entities or the player
+
+*/
+
 #pragma once
+
 class Projectile
 {
 public:

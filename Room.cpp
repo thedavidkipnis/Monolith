@@ -1,3 +1,16 @@
+/*
+Copyright KD Studios
+Written by David Kipnis, 2024
+*/
+
+/*
+
+ROOM Class
+
+Represents a Room object, with its tile, barriers, and entities
+
+*/
+
 #include "Room.h"
 
 using namespace std;
@@ -26,25 +39,25 @@ Room::Room() {
 
 }
 
-string Room::parseRoomFile(string file_name) {
+string Room::parseRoomFile(string filepath) {
 	ifstream roomfile;
 	roomfile.exceptions(ifstream::badbit | ifstream::failbit);
 
 	string room_config = "";
 
 	try {
-		roomfile.open(file_name);
+		roomfile.open(filepath);
 
+		// concatenating each line from file to final string
 		string t;
 		while (getline(roomfile, t)) {
 			room_config.append(t);
 		}
 
 		roomfile.close();
-		return room_config;
 	}
 	catch (ifstream::failure& e) {
-		printf("%s %s\n", "Failed to open room file:", file_name.c_str());
+		printf("%s %s\n", "Failed to open room file:", filepath.c_str());
 		printf("%s\n", e.what());
 	}
 
@@ -57,16 +70,22 @@ Room::Room(string file_name) {
 	barriers.reserve(192);
 	neighbors.reserve(4);
 
+	// initializing neighbors with null ptrs
 	for (size_t i = 0; i < 4; i++)
 	{
 		neighbors.push_back(nullptr);
 	}
+
+	/* The dimensions and tile counts are currently hardcoded
+	* Will need to eventually refactor to address screen dimensions
+	*/
 
 	string config = parseRoomFile(file_name);
 	int counter = 0;
 	int column_counter = 0;
 	int row_counter = 0;
 
+	// parsing config string and populating room with tiles/barriers
 	for (char c : config) {
 		if (c != ',') {
 
@@ -105,6 +124,10 @@ std::vector<Tile>* Room::getBarriers() {
 
 Room* Room::getNeighborAt(int position) {
 	return neighbors[position];
+}
+
+std::vector<Room*>* Room::getNeighbors() {
+	return &neighbors;
 }
 
 void Room::setNeighborAt(int position, Room* neighbor) {

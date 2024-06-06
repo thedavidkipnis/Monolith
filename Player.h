@@ -1,3 +1,16 @@
+/*
+Copyright KD Studios
+Written by David Kipnis, 2024
+*/
+
+/*
+
+PLAYER Class Header
+
+Keeps track of the playable character mechanics, inventory, and stats
+
+*/
+
 #pragma once
 #include <SDL.h>
 #include <SDL_image.h>
@@ -6,28 +19,28 @@
 #include <string>
 #include <vector>
 #include <Entity.h>
-#include "Tile.h"
+#include <Tile.h>
+#include <MathFunc.h>
 
 class Player
 {
 	public:
 
-		//Maximum axis velocity of the dot
+		// player's maximum velocity
 		int MAX_VEL;
 
-		//Initializes the variables
 		Player(int w, int h, float posX, float posY);
 
-		//Takes key presses and adjusts the dot's velocity
+		// handles user input to see if it affects the player
 		void handleEvent(SDL_Event& e);
 
-		int checkCollision(SDL_Rect a, SDL_Rect b);
-
-		//Moves the dot
+		// moves the player
 		void move(float screenWidth, float screenHeight, std::vector<Tile> * barriers);
 
-		void moveIntoRoom(int positionInRoom);
+		// moves player into room once they reach an open doorway
+		void moveIntoRoom();
 
+		// handles user input to see if player is attacking
 		void attack(SDL_Event& e);
 
 		float getXPos();
@@ -40,9 +53,11 @@ class Player
 		float getWidth();
 		SDL_Rect* getHitbox();
 
+		// returns which direction user
 		int getAttackDir();
 
-		int returnDirection();
+		// returns which direction user is moving
+		int returnMovementDirection();
 
 	private:
 		int width, height;
@@ -55,7 +70,6 @@ class Player
 		float decceleration_factor;
 
 		bool up, down, left, right;
-		float last_known_up, last_known_down, last_known_left, last_known_right;
 
 		int attackDir;
 

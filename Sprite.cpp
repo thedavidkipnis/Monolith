@@ -1,3 +1,16 @@
+/*
+Copyright KD Studios
+Written by David Kipnis, 2024
+*/
+
+/*
+
+SPRITE Class
+
+A sprite that can be rendered on the screen
+
+*/
+
 #include "Sprite.h"
 
 Sprite::Sprite()

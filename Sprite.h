@@ -1,3 +1,16 @@
+/*
+Copyright KD Studios
+Written by David Kipnis, 2024
+*/
+
+/*
+
+SPRITE Class Header
+
+A sprite that can be rendered on the screen
+
+*/
+
 #pragma once
 #include <string>
 #include <SDL.h>
@@ -6,13 +19,13 @@
 class Sprite
 {
 public:
-	//Initializes variables
+
 	Sprite();
 
-	//Deallocates memory
+	//Memory deallocation
 	~Sprite();
 
-	//Loads image at specified path
+	//Loads image from file path
 	bool loadFromFile(SDL_Renderer* renderer, std::string path);
 
 #if defined(SDL_TTF_MAJOR_VERSION)
