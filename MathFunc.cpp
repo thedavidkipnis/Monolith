@@ -40,29 +40,23 @@ int MathFunc::checkCollision(SDL_Rect a, SDL_Rect b) {
 
 	if ((a_center_x <= b_center_x)) {
 		if (bottom_a >= bottom_b && !(a_center_x >= left_b - (a.w / 2) - 5 && a_center_x <= left_b - (a.w / 2) + 5)) {
-			//last_known_up = bottom_b + 1;
 			return 3;
 		}
 		else if (top_a <= top_b && !(a_center_x >= left_b - (a.w / 2) - 5 && a_center_x <= left_b - (a.w / 2) + 5)) {
-			//last_known_down = top_b;
 			return 1;
 		}
 		else {
-			//last_known_right = left_b;
 			return 0;
 		}
 	}
 	else {
 		if (bottom_a >= bottom_b && !(a_center_x >= right_b + (a.w / 2) - 5 && a_center_x <= right_b + (a.w / 2) + 5)) {
-			//last_known_up = bottom_b + 1;
 			return 3;
 		}
 		else if (top_a <= top_b && !(a_center_x >= right_b + (a.w / 2) - 5 && a_center_x <= right_b + (a.w / 2) + 5)) {
-			//last_known_down = top_b;
 			return 1;
 		}
 		else {
-			//last_known_left = right_b + 1;
 			return 2;
 		}
 	}

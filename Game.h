@@ -25,6 +25,7 @@ Main Game object that runs the game
 #include <Sprite.h>
 #include <Room.h>  
 #include <Tile.h>
+#include <Object.h>
 
 
 class Game
@@ -97,6 +98,9 @@ private:
 	Sprite dirtTexture;
 	Sprite spooderTexture;
 	Sprite doorTexture;
+
+	Sprite barrelTexture;
+	Sprite coinTexture;
 
 	Sprite swordTexture;
 

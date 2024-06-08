@@ -227,6 +227,18 @@ bool Game::loadMedia()
 		success = false;
 	}
 
+	if (!barrelTexture.loadFromFile(gRenderer, "img/barrel.png"))
+	{
+		printf("Failed to load barrel texture!\n");
+		success = false;
+	}
+	
+	if (!coinTexture.loadFromFile(gRenderer, "img/coin.png"))
+	{
+		printf("Failed to load barrel texture!\n");
+		success = false;
+	}
+
 	return success;
 }
 
@@ -270,6 +282,8 @@ int Game::run()
 	// creating player object
 	Player* player = new Player(75, 75, 100, 100);
 	Entity* testSpooder = new Entity(75, 75, 1000, 800);
+
+	Object* coin = new Object(999, 500,500, 32,32);
 
 
 	// generating rooms
@@ -337,13 +351,23 @@ int Game::run()
 
 		// rendering player + hitbox
 		renderPlayer(player);
-		/*SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0x00);
-		SDL_RenderDrawRect(gRenderer, player->getHitbox());*/
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0x00);
+		SDL_RenderDrawRect(gRenderer, player->getHitbox());
 
 		// rendering test spider + hitbox
 		renderTile(&spooderTexture, testSpooder->getXPos(), testSpooder->getYPos(), 75, 75, 0);
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0x00);
 		SDL_RenderDrawRect(gRenderer, testSpooder->getHitbox());
+
+		// rendering test coin + hitbox
+		coin->adjustState(player->getHitbox());
+		coin->move();
+		renderTile(&coinTexture, coin->getXPos(), coin->getYPos(), 32, 32, 0);
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0x00);
+		SDL_RenderDrawRect(gRenderer, coin->getHitbox());
+
+
+		SDL_RenderDrawLine(gRenderer, player->getCenterX(), player->getCenterY(), coin->getCenterX(), coin->getCenterY());
 
 		// rendering player attack
 		int attackDirection = player->getAttackDir();

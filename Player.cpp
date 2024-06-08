@@ -242,6 +242,13 @@ float Player::getYPos() {
 	return mPosY;
 }
 
+float Player::getXVel() {
+	return mVelX;
+}
+float Player::getYVel() {
+	return mVelY;
+}
+
 void Player::setXPos(float p_x) {
 	mPosX = p_x;
 }

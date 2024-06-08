@@ -18,6 +18,13 @@ Helper class that contains mathematical functions for performing game physics ca
 class MathFunc
 {
 public:
+
+	/* returns the direction from which a is colliding with b, and -1 if there is no collision
+	* 0 = from left
+	* 1 = from top
+	* 2 = from right
+	* 3 = from bottom
+	*/ 
 	static int checkCollision(SDL_Rect a, SDL_Rect b);
 };
 

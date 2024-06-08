@@ -45,6 +45,8 @@ class Player
 
 		float getXPos();
 		float getYPos();
+		float getXVel();
+		float getYVel();
 		float getCenterX();
 		float getCenterY();
 		void setXPos(float p_x);
