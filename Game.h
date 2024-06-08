@@ -26,6 +26,7 @@ Main Game object that runs the game
 #include <Room.h>  
 #include <Tile.h>
 #include <Object.h>
+#include <Circle.h>
 
 
 class Game

@@ -283,7 +283,7 @@ int Game::run()
 	Player* player = new Player(75, 75, 100, 100);
 	Entity* testSpooder = new Entity(75, 75, 1000, 800);
 
-	Object* coin = new Object(999, 500,500, 32,32);
+	Object* coin = new Object(999, 500,500, 120,120);
 
 
 	// generating rooms
@@ -360,14 +360,11 @@ int Game::run()
 		SDL_RenderDrawRect(gRenderer, testSpooder->getHitbox());
 
 		// rendering test coin + hitbox
-		coin->adjustState(player->getHitbox());
-		coin->move();
-		renderTile(&coinTexture, coin->getXPos(), coin->getYPos(), 32, 32, 0);
+		//coin->adjustState(player->getHitbox());
+		//coin->move();
+		//renderTile(&coinTexture, coin->getXPos(), coin->getYPos(), 120, 120, 0);
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0x00);
 		SDL_RenderDrawRect(gRenderer, coin->getHitbox());
-
-
-		SDL_RenderDrawLine(gRenderer, player->getCenterX(), player->getCenterY(), coin->getCenterX(), coin->getCenterY());
 
 		// rendering player attack
 		int attackDirection = player->getAttackDir();

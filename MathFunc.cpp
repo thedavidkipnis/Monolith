@@ -61,3 +61,52 @@ int MathFunc::checkCollision(SDL_Rect a, SDL_Rect b) {
 		}
 	}
 }
+
+bool MathFunc::checkCollision(Circle a, SDL_Rect b) {
+	int cX, cY;
+
+	//Find closest x offset
+	if (a.getCenterX() < b.x)
+	{
+		cX = b.x;
+	}
+	else if (a.getCenterX() > b.x + b.w)
+	{
+		cX = b.x + b.w;
+	}
+	else
+	{
+		cX = a.getCenterX();
+	}
+
+	//Find closest y offset
+	if (a.getCenterY() < b.y)
+	{
+		cY = b.y;
+	}
+	else if (a.getCenterY() > b.y + b.h)
+	{
+		cY = b.y + b.h;
+	}
+	else
+	{
+		cY = a.getCenterY();
+	}
+
+	//If the closest point is inside the circle
+	if (distanceSquared(a.getCenterX(), a.getCenterY(), cX, cY) < a.getRadius() * a.getRadius())
+	{
+		//This box and the circle have collided
+		return true;
+	}
+
+	//If the shapes have not collided
+	return false;
+}
+
+double MathFunc::distanceSquared(int x1, int y1, int x2, int y2)
+{
+	int deltaX = x2 - x1;
+	int deltaY = y2 - y1;
+	return deltaX * deltaX + deltaY * deltaY;
+}
