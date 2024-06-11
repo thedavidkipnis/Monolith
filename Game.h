@@ -17,6 +17,7 @@ Main Game object that runs the game
 #include <string>
 #include <time.h>
 #include <vector>
+#include <unordered_map>
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -28,6 +29,7 @@ Main Game object that runs the game
 #include <Object.h>
 #include <Circle.h>
 
+using namespace std;
 
 class Game
 {
@@ -68,11 +70,16 @@ public:
 	*/
 	void renderTile(Sprite* texture, float posX, float posY, float width, float height, double angle);
 
-	// renders current room
-	void renderRoom(std::vector<Tile>* tiles, std::vector<Tile>* barriers, std::vector<Room*>* neighbors);
+	// renders current room (tiles, barriers, and doors)
+	void renderRoom(int curRoomID, std::vector<Tile>* tiles, std::vector<Tile>* barriers);
+
+	/*Generates current floor
+	* 
+	*/
+	void generateFloor();
 
 	// checks if player is in a doorway to another room
-	Room* isPlayerInDoorway(Room* curRoom, float player_x, float player_y);
+	Room* isPlayerInDoorway(int roomID, float player_x, float player_y);
 
 	//moves player into new room and changes room tiles, barriers and entities
 	void moveToRoom(Player* player, Room* newRoom);
@@ -88,11 +95,17 @@ private:
 	//renderer being used
 	SDL_Renderer* gRenderer = NULL;
 
+	//the game floor
+	unordered_map<int, Room> floor;
+
 	//room the game is currently in
 	Room* curRoom;
-	std::vector<Tile>* tiles;
-	std::vector<Tile>* barriers;
-	std::vector<Room*>* neighbors;
+	vector<Tile>* tiles;
+	vector<Tile>* barriers;
+	vector<Room*>* neighbors;
+
+	//enumeration of all room types
+	enum RoomType { Start, Encounter, Shop, Hidden, Treaure, Altar, Boss };
 
 	//textures
 	Sprite gBlockTexture;
@@ -110,7 +123,6 @@ private:
 	Sprite p_down;
 	Sprite p_left;
 	Sprite p_right;
-
 
 	int attackDir = -1;
 

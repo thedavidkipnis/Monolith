@@ -58,7 +58,7 @@ void Game::renderTile(Sprite* texture, float mPosX, float mPosY, float width, fl
 	texture->render(gRenderer, mPosX, mPosY, width, height, NULL, angle);
 }
 
-void Game::renderRoom(std::vector<Tile>* tiles, std::vector<Tile>* barriers, std::vector<Room*>* neighbors) {
+void Game::renderRoom(int curRoomID, std::vector<Tile>* tiles, std::vector<Tile>* barriers) {
 
 	//renders all non barrier tiles
 	for (size_t i = 0; i < tiles->size(); i++)
@@ -74,36 +74,36 @@ void Game::renderRoom(std::vector<Tile>* tiles, std::vector<Tile>* barriers, std
 	}
 
 	// rendering doors
-	if (neighbors->at(0) != NULL) {
+	if (floor.find(curRoomID - 100) != floor.end()) {
 		renderTile(&doorTexture, -40, 440, 160, 80, 270);
 	}
 
-	if (neighbors->at(1) != NULL) {
+	if (floor.find(curRoomID - 1) != floor.end()) {
 		renderTile(&doorTexture, 560, 0, 160, 80, 0);
 	}
 
-	if (neighbors->at(2) != NULL) {
+	if (floor.find(curRoomID + 100) != floor.end()) {
 		renderTile(&doorTexture, 1160, 440, 160, 80, 90);
 	}
 
-	if (neighbors->at(3) != NULL) {
+	if (floor.find(curRoomID + 1) != floor.end()) {
 		renderTile(&doorTexture, 560, 880, 160, 80, 180);
 	}
 }
 
-Room* Game::isPlayerInDoorway(Room* curRoom, float px, float py) {
+Room* Game::isPlayerInDoorway(int roomID, float px, float py) {
 
-	if (px >= 580 && px <= 700 && py <= 80 and curRoom->getNeighborAt(1) != NULL) {	
-		return curRoom->getNeighborAt(1);
+	if (px >= 580 && px <= 700 && py <= 80 and (floor.find(roomID-1) != floor.end())) {	
+		return &floor[roomID - 1];
 	}
-	if (px <= 81 && py >= 440 && py <= 520 and curRoom->getNeighborAt(0) != NULL) {
-		return curRoom->getNeighborAt(0);
+	if (px <= 81 && py >= 440 && py <= 520 and (floor.find(roomID - 100) != floor.end())) {
+		return &floor[roomID - 100];
 	}
-	if (px >= 1119 && py >= 440 && py <= 520 and curRoom->getNeighborAt(2) != NULL) {
-		return curRoom->getNeighborAt(2);
+	if (px >= 1119 && py >= 440 && py <= 520 and (floor.find(roomID + 100) != floor.end())) {
+		return &floor[roomID + 100];
 	}
-	if (px >= 580 && px <= 700 && py >= 799 and curRoom->getNeighborAt(3) != NULL) {
-		return curRoom->getNeighborAt(3);
+	if (px >= 580 && px <= 700 && py >= 799 and (floor.find(roomID + 1) != floor.end())) {
+		return &floor[roomID + 1];
 	}
 	return nullptr;
 }
@@ -242,6 +242,28 @@ bool Game::loadMedia()
 	return success;
 }
 
+void Game::generateFloor() {
+	
+	int maxRoomsTillEnd = 3;
+	int roomsGenerated = 0;
+
+	//generating path from start room to boss room
+	int curRoomID = 5050;
+	floor[5050] = Room("rooms/empty_test_1.txt", curRoomID, RoomType::Start);
+
+	while (roomsGenerated < maxRoomsTillEnd) {
+
+		/*if (floor.find(curRoomID - 101) == floor.end()) {
+
+		}*/
+		curRoomID = curRoomID + 1;
+		floor[curRoomID] = Room("rooms/empty_test_3.txt", curRoomID, RoomType::Encounter);
+
+		roomsGenerated++;
+	}
+
+}
+
 void Game::close()
 {
 	//Free loaded images
@@ -283,31 +305,11 @@ int Game::run()
 	Player* player = new Player(75, 75, 100, 100);
 	Entity* testSpooder = new Entity(75, 75, 1000, 800);
 
-	Object* coin = new Object(999, 500,500, 120,120);
-
-
 	// generating rooms
-	Room room1 = Room::Room("rooms/empty_test_1.txt");
-	Room room2 = Room::Room("rooms/empty_test_2.txt");
-	Room room3 = Room::Room("rooms/empty_test_3.txt");
-	Room room4 = Room::Room("rooms/empty_test_3.txt");
-	Room room5 = Room::Room("rooms/empty_test_3.txt");
-
-	// setting neighbors
-	room1.setNeighborAt(0, &room2);
-	room2.setNeighborAt(2, &room1);
-
-	room2.setNeighborAt(0, &room5);
-	room5.setNeighborAt(2, &room2);
-
-	room1.setNeighborAt(1, &room3);
-	room3.setNeighborAt(3, &room1);
-
-	room1.setNeighborAt(3, &room4);
-	room4.setNeighborAt(1, &room1);
+	generateFloor();
 
 	// assigning starter room
-	curRoom = &room1;
+	curRoom = &floor[5050];
 
 	// getting current room's tiles, barries, and neighbors
 	tiles = curRoom->getTiles();
@@ -338,38 +340,31 @@ int Game::run()
 			player->attack(e);
 		}
 
-		//Move the dot
+		//move the player + entities
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, barriers);
 		testSpooder->chasePlayer(player->getCenterX(), player->getCenterY(), barriers);
 
-		//Clear screen
+		//clear screen
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
 
-		// rendering room
-		renderRoom(tiles, barriers, neighbors);
+		//rendering room
+		renderRoom(curRoom->getRoomID(), tiles, barriers);
 
-		// rendering player + hitbox
+		//rendering player + hitbox
 		renderPlayer(player);
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0x00);
 		SDL_RenderDrawRect(gRenderer, player->getHitbox());
 
-		// rendering test spider + hitbox
+		//rendering test spider + hitbox
 		renderTile(&spooderTexture, testSpooder->getXPos(), testSpooder->getYPos(), 75, 75, 0);
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0x00);
 		SDL_RenderDrawRect(gRenderer, testSpooder->getHitbox());
 
-		// rendering test coin + hitbox
-		//coin->adjustState(player->getHitbox());
-		//coin->move();
-		//renderTile(&coinTexture, coin->getXPos(), coin->getYPos(), 120, 120, 0);
-		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0x00);
-		SDL_RenderDrawRect(gRenderer, coin->getHitbox());
-
-		// rendering player attack
-		int attackDirection = player->getAttackDir();
-		if (attackDirection > -1) {
-			switch (attackDirection) {
+		//rendering player attack
+		attackDir = player->getAttackDir();
+		if (attackDir > -1) {
+			switch (attackDir) {
 			case(0):
 				renderTile(&swordTexture, player->getCenterX() - 80, player->getCenterY() - 32, 64, 64, 270);
 				break;
@@ -385,17 +380,16 @@ int Game::run()
 			}
 		}
 
-		// update screen
+		//update screen
 		SDL_RenderPresent(gRenderer);
 
-		// checking if player is in doorway to move to new room
+		//checking if player is in doorway to move to new room
 		px = player->getXPos();
 		py = player->getYPos();
-		newRoom = isPlayerInDoorway(curRoom, px, py);
+		newRoom = isPlayerInDoorway(curRoom->getRoomID(), px, py);
 		if (newRoom != NULL) {
 			moveToRoom(player, newRoom);
 		}
-
 	}
 
 	//Free resources and close SDL

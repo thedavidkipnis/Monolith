@@ -16,27 +16,7 @@ Represents a Room object, with its tile, barriers, and entities
 using namespace std;
 
 Room::Room() {
-
-	tiles.reserve(192);
-	barriers.reserve(192);
-
-	for (size_t i = 0; i < 16; i++)
-	{
-		for (size_t j = 0; j < 12; j++)
-		{
-			SDL_Rect tileRect{ i * 80, j * 80, 80, 80 };
-
-			if (i == 0 || i == 15 || j == 0 || j == 11 || (i == 5 && j == 7)) {
-				Tile newTile = Tile::Tile(1, tileRect);
-				barriers.push_back(newTile);  
-			}
-			else {
-				Tile newTile = Tile::Tile(0, tileRect);
-				tiles.push_back(newTile);
-			}
-		}
-	}
-
+	// currently empty cuz I don't need to use it lol
 }
 
 string Room::parseRoomFile(string filepath) {
@@ -64,7 +44,10 @@ string Room::parseRoomFile(string filepath) {
 	return room_config;
 }
 
-Room::Room(string file_name) {
+Room::Room(string file_name, int ID, int type) {
+
+	roomID = ID;
+	roomType = type;
 
 	tiles.reserve(192);
 	barriers.reserve(192);
@@ -112,6 +95,14 @@ Room::Room(string file_name) {
 			counter++;
 		}
 	}
+}
+
+int Room::getRoomID() {
+	return roomID;
+}
+
+int Room::getRoomType() {
+	return roomType;
 }
 
 std::vector<Tile>* Room::getTiles() {

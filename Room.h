@@ -33,12 +33,14 @@ public:
 	Room();
 
 	// generate room object using a room config file from /rooms
-	Room(string file_name);
+	Room(string file_name, int ID, int type);
 
-	//non collision tiles
+	int getRoomID();
+
+	int getRoomType();
+
 	std::vector<Tile>* getTiles();
 
-	//collidable, 'barrier' tiles - used in checking collision
 	std::vector<Tile>* getBarriers();
 
 	/* 
@@ -67,7 +69,14 @@ private:
 	*/
 	string parseRoomFile(string filepath);
 
+	int roomID;
+
+	int roomType;
+
+	//non collision tiles
 	std::vector<Tile> tiles;
+
+	//collidable, 'barrier' tiles - used in checking collision
 	std::vector<Tile> barriers;
 
 	std::vector<Room*> neighbors;
